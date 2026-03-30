@@ -1,233 +1,49 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en-us">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no" />
-    <title>UgolMira</title>
+    <title>Unity Web Player | WebSiteRock</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-    <style>
-      /* Make Unity canvas fill the whole browser window */
-      html, body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        background: #000;
-        overflow: hidden;
-      }
-
-      /* Let Unity handle canvas sizing to avoid early layout edge cases. */
-
-      /* Custom preloader overlay (replaces Unity default loading bar) */
-      #preloader {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        background: radial-gradient(1200px circle at 10% 10%, rgba(124, 92, 255, 0.22), rgba(0,0,0,0) 55%),
-                    radial-gradient(900px circle at 90% 20%, rgba(0, 196, 255, 0.18), rgba(0,0,0,0) 50%),
-                    rgba(0,0,0,0.65);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        transition: opacity 450ms ease, transform 450ms ease;
-      }
-
-      #preloader.is-hidden {
-        opacity: 0;
-        transform: scale(0.98);
-        pointer-events: none;
-      }
-
-      .preloader-panel {
-        width: min(560px, 92vw);
-        padding: 28px 26px;
-        border-radius: 22px;
-        background: rgba(20, 20, 30, 0.72);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        box-shadow: 0 18px 55px rgba(0, 0, 0, 0.55);
-      }
-
-      .preloader-top {
-        display: flex;
-        gap: 16px;
-        align-items: center;
-        margin-bottom: 18px;
-      }
-
-      .preloader-spinner {
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        border: 4px solid rgba(255,255,255,0.16);
-        border-top-color: #7c5cff;
-        animation: preloader-spin 0.9s linear infinite;
-        flex: 0 0 auto;
-      }
-
-      @keyframes preloader-spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-
-      .preloader-title {
-        font-family: Arial, Helvetica, sans-serif;
-        font-weight: 700;
-        font-size: 18px;
-        color: rgba(255,255,255,0.95);
-        margin: 0;
-        line-height: 1.2;
-      }
-
-      .preloader-subtitle {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 13px;
-        color: rgba(255,255,255,0.72);
-        margin-top: 6px;
-      }
-
-      .preloader-progress {
-        margin-top: 16px;
-      }
-
-      .preloader-bar {
-        height: 12px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.10);
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.10);
-      }
-
-      .preloader-bar-fill {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, #7c5cff 0%, #00c4ff 100%);
-        box-shadow: 0 0 18px rgba(124, 92, 255, 0.35);
-        transition: width 120ms linear;
-      }
-
-      .preloader-meta {
-        margin-top: 10px;
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        font-family: Arial, Helvetica, sans-serif;
-      }
-
-      .preloader-percent {
-        font-weight: 700;
-        color: rgba(255,255,255,0.92);
-      }
-
-      .preloader-hint {
-        font-size: 12px;
-        color: rgba(255,255,255,0.68);
-      }
-
-      /* Minimal HUD for fullscreen */
-      #hud {
-        position: fixed;
-        right: 18px;
-        bottom: 18px;
-        z-index: 10;
-        display: none;
-      }
-
-      #hud.is-visible {
-        display: block;
-      }
-
-      #fullscreen-btn {
-        cursor: pointer;
-        user-select: none;
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(20, 20, 30, 0.55);
-        color: rgba(255,255,255,0.92);
-        padding: 10px 14px;
-        border-radius: 14px;
-        font-family: Arial, Helvetica, sans-serif;
-        font-weight: 700;
-        letter-spacing: 0.2px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-        transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-      }
-
-      #fullscreen-btn:hover {
-        transform: translateY(-1px);
-        border-color: rgba(255,255,255,0.24);
-        background: rgba(20, 20, 30, 0.70);
-      }
-    </style>
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
-
-      <div id="unity-warning" aria-live="polite"></div>
-
-      <div id="preloader" role="status" aria-label="Loading">
-        <div class="preloader-panel">
-          <div class="preloader-top">
-            <div class="preloader-spinner" aria-hidden="true"></div>
-            <div>
-              <div class="preloader-title">WebSiteRock</div>
-              <div class="preloader-subtitle">Подготовка мира... загружаем ресурсы</div>
-            </div>
-          </div>
-
-          <div class="preloader-progress">
-            <div class="preloader-bar">
-              <div id="preloader-bar-fill" class="preloader-bar-fill"></div>
-            </div>
-            <div class="preloader-meta">
-              <div id="preloader-percent" class="preloader-percent">0%</div>
-              <div class="preloader-hint">Нажмите кнопку Fullscreen, чтобы включить полноэкранный режим</div>
-            </div>
-          </div>
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
         </div>
       </div>
-
-      <div id="hud">
-        <button id="fullscreen-btn" type="button">Fullscreen</button>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-logo-title-footer"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">WebSiteRock</div>
       </div>
     </div>
     <script>
-      const canvas = document.querySelector("#unity-canvas");
-      const preloader = document.querySelector("#preloader");
-      const preloaderPercent = document.querySelector("#preloader-percent");
-      const preloaderBarFill = document.querySelector("#preloader-bar-fill");
-      const hud = document.querySelector("#hud");
-      const fullscreenBtn = document.querySelector("#fullscreen-btn");
-
-      let unityInstance = null;
-      let fullscreenRequested = false;
-
-      // Browsers require a user gesture for fullscreen.
-      function requestFullscreenOnce() {
-        if (!unityInstance || fullscreenRequested) return;
-        fullscreenRequested = true;
-        unityInstance.SetFullscreen(1);
-        hud.classList.remove("is-visible");
-      }
+      var canvas = document.querySelector("#unity-canvas");
 
       // Shows a temporary message banner/ribbon for a few seconds, or
       // a permanent error message on top of the canvas if type=='error'.
       // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
       function unityShowBanner(msg, type) {
-        const warningBanner = document.querySelector("#unity-warning");
+        var warningBanner = document.querySelector("#unity-warning");
         function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? "block" : "none";
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
-        const div = document.createElement("div");
+        var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-        if (type === "error") div.style = "background: red; padding: 10px;";
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
         else {
-          if (type === "warning") div.style = "background: yellow; padding: 10px;";
-          setTimeout(function () {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
             warningBanner.removeChild(div);
             updateBannerVisibility();
           }, 5000);
@@ -235,10 +51,9 @@
         updateBannerVisibility();
       }
 
-      const buildUrl = "Build";
-      const loaderUrl = buildUrl + "/Build.loader.js";
-
-      const config = {
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/Build.loader.js";
+      var config = {
         arguments: [],
         dataUrl: buildUrl + "/Build.data.unityweb",
         frameworkUrl: buildUrl + "/Build.framework.js.unityweb",
@@ -248,51 +63,71 @@
         productName: "WebSiteRock",
         productVersion: "0.1.0",
         showBanner: unityShowBanner,
+        // errorHandler: function(err, url, line) {
+        //    alert("error " + err + " occurred at line " + line);
+        //    // Return 'true' if you handled this error and don't want Unity
+        //    // to process it further, 'false' otherwise.
+        //    return true;
+        // },
       };
 
+      // By default, Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
+      // If you would like all file writes inside Unity Application.persistentDataPath
+      // directory to automatically persist so that the contents are remembered when
+      // the user revisits the site the next time, uncomment the following line:
+      // config.autoSyncPersistentDataPath = true;
+      // This autosyncing is currently not the default behavior to avoid regressing
+      // existing user projects that might rely on the earlier manual
+      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
+      // expected to change.
+
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area.
-        const meta = document.createElement("meta");
-        meta.name = "viewport";
-        meta.content =
-          "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
-        document.getElementsByTagName("head")[0].appendChild(meta);
+        // Mobile device style: fill the whole browser client area with the game canvas:
+
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
         document.querySelector("#unity-container").className = "unity-mobile";
         canvas.className = "unity-mobile";
-        // To lower canvas resolution on mobile devices, uncomment:
+
+        // To lower canvas resolution on mobile devices to gain some
+        // performance, uncomment the following line:
         // config.devicePixelRatio = 1;
+
+
       } else {
-        // Desktop style (Unity template): fixed window size that can be maximized to fullscreen.
+        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
         canvas.style.width = "960px";
         canvas.style.height = "600px";
       }
 
-      const script = document.createElement("script");
+      document.querySelector("#unity-loading-bar").style.display = "block";
+
+      var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-          const p = Math.max(0, Math.min(progress, 1));
-          const percent = Math.floor(p * 100);
-          preloaderPercent.textContent = percent + "%";
-          preloaderBarFill.style.width = percent + "%";
-        }).then((instance) => {
-          unityInstance = instance;
+          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+              }).then((unityInstance) => {
+                document.querySelector("#unity-loading-bar").style.display = "none";
+                document.querySelector("#unity-fullscreen-button").onclick = () => {
+                  unityInstance.SetFullscreen(1);
+                };
 
-          preloader.classList.add("is-hidden");
-          setTimeout(() => {
-            preloader.style.display = "none";
-          }, 460);
-
-          hud.classList.add("is-visible");
-
-          fullscreenBtn.addEventListener("click", requestFullscreenOnce);
-        }).catch((message) => {
-          preloader.style.display = "none";
-          alert(message);
-        });
-      };
+              }).catch((message) => {
+                alert(message);
+              });
+            };
 
       document.body.appendChild(script);
+
     </script>
   </body>
 </html>
