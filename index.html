@@ -184,7 +184,7 @@
             </div>
             <div class="preloader-meta">
               <div id="preloader-percent" class="preloader-percent">0%</div>
-              <div class="preloader-hint">После загрузки нажмите, чтобы включить fullscreen</div>
+              <div class="preloader-hint">Нажмите кнопку Fullscreen, чтобы включить полноэкранный режим</div>
             </div>
           </div>
         </div>
@@ -250,6 +250,23 @@
         showBanner: unityShowBanner,
       };
 
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area.
+        const meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content =
+          "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.getElementsByTagName("head")[0].appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
+        canvas.className = "unity-mobile";
+        // To lower canvas resolution on mobile devices, uncomment:
+        // config.devicePixelRatio = 1;
+      } else {
+        // Desktop style (Unity template): fixed window size that can be maximized to fullscreen.
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
+      }
+
       const script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
@@ -269,7 +286,6 @@
           hud.classList.add("is-visible");
 
           fullscreenBtn.addEventListener("click", requestFullscreenOnce);
-          document.addEventListener("pointerdown", requestFullscreenOnce, { once: true });
         }).catch((message) => {
           preloader.style.display = "none";
           alert(message);
