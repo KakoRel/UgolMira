@@ -18,18 +18,7 @@
         overflow: hidden;
       }
 
-      #unity-container {
-        position: fixed !important;
-        inset: 0 !important;
-        left: auto !important;
-        top: auto !important;
-        transform: none !important;
-      }
-
-      #unity-canvas {
-        width: 100vw !important;
-        height: 100vh !important;
-      }
+      /* Let Unity handle canvas sizing to avoid early layout edge cases. */
 
       /* Custom preloader overlay (replaces Unity default loading bar) */
       #preloader {
@@ -174,7 +163,7 @@
     </style>
   </head>
   <body>
-    <div id="unity-container">
+    <div id="unity-container" class="unity-desktop">
       <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
 
       <div id="unity-warning" aria-live="polite"></div>
@@ -260,10 +249,6 @@
         productVersion: "0.1.0",
         showBanner: unityShowBanner,
       };
-
-      // Keep canvas always covering the viewport.
-      canvas.style.width = "100%";
-      canvas.style.height = "100%";
 
       const script = document.createElement("script");
       script.src = loaderUrl;
